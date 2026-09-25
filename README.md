@@ -326,6 +326,4 @@ MIT — voir [LICENSE](LICENSE).
 
 <div align="center">
 
-Fait avec ☕ et beaucoup de `System.out.println`.
-
 </div>

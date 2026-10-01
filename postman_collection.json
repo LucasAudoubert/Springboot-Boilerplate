@@ -1,0 +1,349 @@
+{
+  "info": {
+    "_postman_id": "b1e2c3d4-0001-4a2b-9c3d-000000000001",
+    "name": "Spring Boot Tech Configurator",
+    "description": "Collection de test pour l'API Spring Boot Tech Configurator (PC, Laptop, Phone).\n\nPrerequis :\n1. Lancer l'application (./mvnw spring-boot:run) : elle ecoute sur http://localhost:8080.\n2. Dans Postman, cliquer sur Import et selectionner ce fichier.\n3. Verifier la variable de collection baseUrl (http://localhost:8080).\n\nConseil : executer d'abord une requete POST, puis GET / {id}, PUT / {id} et DELETE / {id}. Les identifiants crees sont enregistres automatiquement dans les variables pcId, laptopId et phoneId.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "pcId", "value": "1" },
+    { "key": "laptopId", "value": "1" },
+    { "key": "phoneId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "1. Disponibilite (hello)",
+      "description": "Verifie que les controleurs repondent.",
+      "item": [
+        {
+          "name": "GET /pc/hello",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/pc/hello",
+            "description": "Test du controleur PC."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /laptop/hello",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/laptop/hello",
+            "description": "Test du controleur Laptop."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /phone/hello",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/phone/hello",
+            "description": "Test du controleur Phone."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. PC",
+      "description": "CRUD complet pour les ordinateurs de bureau.",
+      "item": [
+        {
+          "name": "GET /pc (liste tous les PC)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/pc",
+            "description": "Recupere tous les PC enregistres."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /pc (creer un PC)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "if (data && data.id) { pm.collectionVariables.set(\"pcId\", data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Alienware\",\n  \"ram\": 64,\n  \"gpu\": \"RTX 4090\"\n}"
+            },
+            "url": "{{baseUrl}}/pc",
+            "description": "Cree un PC. L'id genere est stocke dans la variable pcId."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /pc/{id} (recuperer un PC)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/pc/{{pcId}}",
+            "description": "Recupere le PC dont l'id est pcId."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /pc/{id} (modifier un PC)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Alienware\",\n  \"ram\": 128,\n  \"gpu\": \"RTX 5090\"\n}"
+            },
+            "url": "{{baseUrl}}/pc/{{pcId}}",
+            "description": "Modifie le PC dont l'id est pcId."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /pc/{id} (supprimer un PC)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/pc/{{pcId}}",
+            "description": "Supprime le PC dont l'id est pcId."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Laptop",
+      "description": "CRUD complet pour les ordinateurs portables.",
+      "item": [
+        {
+          "name": "GET /laptop (liste tous les laptops)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/laptop",
+            "description": "Recupere tous les laptops enregistres."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /laptop (creer un laptop)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "if (data && data.id) { pm.collectionVariables.set(\"laptopId\", data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"MacBook Pro\",\n  \"ram\": 32,\n  \"batteryLife\": 18\n}"
+            },
+            "url": "{{baseUrl}}/laptop",
+            "description": "Cree un laptop. L'id genere est stocke dans la variable laptopId."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /laptop/{id} (recuperer un laptop)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/laptop/{{laptopId}}",
+            "description": "Recupere le laptop dont l'id est laptopId."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /laptop/{id} (modifier un laptop)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Dell XPS\",\n  \"ram\": 64,\n  \"batteryLife\": 12\n}"
+            },
+            "url": "{{baseUrl}}/laptop/{{laptopId}}",
+            "description": "Modifie le laptop dont l'id est laptopId."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /laptop/{id} (supprimer un laptop)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/laptop/{{laptopId}}",
+            "description": "Supprime le laptop dont l'id est laptopId."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Phone",
+      "description": "CRUD complet pour les telephones.",
+      "item": [
+        {
+          "name": "GET /phone (liste tous les telephones)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/phone",
+            "description": "Recupere tous les telephones enregistres."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /phone (creer un telephone)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () { pm.response.to.have.status(200); });",
+                  "var data = pm.response.json();",
+                  "if (data && data.id) { pm.collectionVariables.set(\"phoneId\", data.id); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"iPhone\",\n  \"ram\": 6,\n  \"network\": \"5G\"\n}"
+            },
+            "url": "{{baseUrl}}/phone",
+            "description": "Cree un telephone. L'id genere est stocke dans la variable phoneId."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /phone/{id} (recuperer un telephone)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/phone/{{phoneId}}",
+            "description": "Recupere le telephone dont l'id est phoneId."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /phone/{id} (modifier un telephone)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Samsung\",\n  \"ram\": 12,\n  \"network\": \"5G\"\n}"
+            },
+            "url": "{{baseUrl}}/phone/{{phoneId}}",
+            "description": "Modifie le telephone dont l'id est phoneId."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /phone/{id} (supprimer un telephone)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/phone/{{phoneId}}",
+            "description": "Supprime le telephone dont l'id est phoneId."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Configurator",
+      "description": "Endpoint unique qui cree un appareil selon le champ type.",
+      "item": [
+        {
+          "name": "POST /configurator (type PC)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PC\",\n  \"brand\": \"MSI\",\n  \"ram\": 16,\n  \"gpu\": \"RTX 4060\"\n}"
+            },
+            "url": "{{baseUrl}}/configurator",
+            "description": "Cree un PC via l'endpoint unifie."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /configurator (type LAPTOP)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"LAPTOP\",\n  \"brand\": \"Dell XPS\",\n  \"ram\": 32,\n  \"batteryLife\": 10\n}"
+            },
+            "url": "{{baseUrl}}/configurator",
+            "description": "Cree un laptop via l'endpoint unifie."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /configurator (type PHONE)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"PHONE\",\n  \"brand\": \"Samsung\",\n  \"ram\": 8,\n  \"network\": \"5G\"\n}"
+            },
+            "url": "{{baseUrl}}/configurator",
+            "description": "Cree un telephone via l'endpoint unifie."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

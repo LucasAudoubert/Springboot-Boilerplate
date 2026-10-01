@@ -374,6 +374,17 @@ curl -X POST http://localhost:8080/configurator \
 
 ### Tester avec Postman
 
+Une collection prête à l'emploi est fournie à la racine du projet : **`postman_collection.json`**.
+
+1. Dans Postman : **Import** puis sélectionner `postman_collection.json`.
+2. Vérifier la variable de collection `baseUrl` (par défaut `http://localhost:8080`).
+3. Exécuter les requêtes. Les identifiants créés sont enregistrés automatiquement
+   dans les variables `pcId`, `laptopId` et `phoneId`.
+
+La collection contient 5 dossiers : disponibilité (`hello`), PC, Laptop, Phone et Configurator.
+
+Manuellement, il est aussi possible de :
+
 1. Créer une nouvelle requête HTTP.
 2. Choisir la méthode (`GET`, `POST`, `PUT`, `DELETE`) et saisir l'URL.
 3. Pour `POST` et `PUT`, ouvrir l'onglet **Body**, sélectionner **raw** puis **JSON** et coller le corps.

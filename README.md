@@ -407,20 +407,6 @@ SELECT * FROM PC;
 
 ## Architecture
 
-Une documentation visuelle complète est disponible dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) :
-
-- Schéma des couches : [`docs/architecture-couches.svg`](docs/architecture-couches.svg) ou [`docs/architecture-couches.png`](docs/architecture-couches.png)
-- Cycle d'une requête : [`docs/cycle-requete.svg`](docs/cycle-requete.svg) ou [`docs/cycle-requete.png`](docs/cycle-requete.png)
-- Diagrammes Mermaid (dépendances, séquence) modifiables
-
-### Schéma des couches
-
-![Architecture en couches](docs/architecture-couches.svg)
-
-### Cycle d'une requête POST /pc
-
-![Cycle d'une requête](docs/cycle-requete.svg)
-
 ### Rôle de chaque couche
 
 | Couche | Dossier | Rôle |

@@ -2,19 +2,18 @@ package com.example.demo.model;
 
 import jakarta.persistence.*;
 
-@Entity // pour new TABLE en bd
-@Table(name = "pc")        // om de la table
+@Entity
+@Table(name = "pc")
 public class PC implements TechInterface {
 
-    @Id                                                          // clé primaire NE PAS TOUCHER
-    @GeneratedValue(strategy = GenerationType.IDENTITY)          // auto-incrémenté syntax wtf
-    private Long id;                                             // clé primaire !ne oas toucher.
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String brand;
     private int ram;
     private String gpu;
 
-    // constructeur
     public PC() {
     }
 

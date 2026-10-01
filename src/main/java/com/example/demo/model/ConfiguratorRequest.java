@@ -7,12 +7,12 @@ package com.example.demo.model;
 public class ConfiguratorRequest {
 
     private String type;
-    private String brand; // eux c'est pour tous
+    private String brand;
     private Integer ram;
 
-    private String gpu;             // PC
-    private Integer batteryLife;    // LAPTOP
-    private String network;         // PHONE
+    private String gpu;
+    private Integer batteryLife;
+    private String network;
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }

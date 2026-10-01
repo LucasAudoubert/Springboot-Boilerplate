@@ -1,65 +1,96 @@
-<div align="center">
+# Spring Boot Tech Configurator
 
-# 🖥️ Spring Boot Tech Configurator
-
-**Une API REST pédagogique qui modélise des appareils (PC, Laptop, Phone) et les persiste en base via Spring Data JPA / Hibernate.**
-
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.1-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/17/)
-[![H2](https://img.shields.io/badge/H2-In--Memory-4479A1?style=for-the-badge&logoColor=white)](https://www.h2database.com)
-[![Docker](https://img.shields.io/badge/Docker-Multi--stage-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
-
-[Présentation](#-présentation) • [Stack](#-stack-technique) • [Démarrage](#-démarrage-rapide) • [Docker](#-déploiement-docker) • [API](#-endpoints-api) • [Architecture](#-architecture)
-
-</div>
+API REST d'apprentissage construite avec Spring Boot. Elle gère trois types d'appareils
+(`PC`, `Laptop`, `Phone`), expose un CRUD complet pour chacun et stocke les données dans une
+base H2 en mémoire via Spring Data JPA.
 
 ---
 
-## 📌 Présentation
+## Table des matières
 
-Ce projet est une **API REST Spring Boot** qui met en pratique l'architecture en couches (Controller → Service → Repository → Model) avec **Spring Data JPA** et une base **H2 in-memory**.
-
-L'idée : un endpoint unique `/configurator` reçoit un JSON décrivant un appareil (`type` + champs) et route vers le bon service pour créer et persister l'entité correspondante (PC, Laptop ou Phone). Tous les appareils implémentent une interface commune `TechInterface` avec une méthode `demarrer()`.
-
-> ⚠️ **Ce dépôt est un projet d'apprentissage.** Pas de JWT, pas de Spring Security, pas de PostgreSQL — uniquement le strict nécessaire pour comprendre le cycle de vie d'une requête Spring Boot jusqu'à la base.
+- [Présentation](#présentation)
+- [Prérequis](#prérequis)
+- [Stack technique](#stack-technique)
+- [Structure du projet](#structure-du-projet)
+- [Démarrage](#démarrage)
+- [Configuration](#configuration)
+- [Modèle de données](#modèle-de-données)
+- [Endpoints API](#endpoints-api)
+- [Exemples d'utilisation](#exemples-dutilisation)
+- [Base de données H2](#base-de-données-h2)
+- [Architecture](#architecture)
+- [Docker](#docker)
+- [Tests](#tests)
+- [Dépannage](#dépannage)
+- [Licence](#licence)
 
 ---
 
-## ✨ Fonctionnalités
+## Présentation
 
-* 🧩 **Architecture en couches** : `model` / `repository` / `service` / `controller`
-* 💾 **Persistance JPA** : trois entités (`PC`, `Laptop`, `Phone`) mappées sur trois tables H2
-* 🔌 **Endpoint unique `/configurator`** : un seul POST qui route selon le champ `type`
-* 🧪 **Test smoke Spring Boot** : `DemoApplicationTests.contextLoads()` valide le contexte au démarrage
-* 🐳 **Docker multi-stage** : image finale basée sur `eclipse-temurin:17-jre-alpine`
-* 🛢️ **Console H2** activée en dev pour explorer la base depuis le navigateur
+Ce projet est une application Spring Boot simple destinée à illustrer l'architecture en
+couches d'une API REST :
+
+```
+Controller  ->  Service  ->  Repository  ->  Base de données
+```
+
+Chaque type d'appareil possède son propre contrôleur, service et repository :
+
+| Appareil | Endpoint de base |
+| --- | --- |
+| Ordinateur de bureau | `/pc` |
+| Ordinateur portable | `/laptop` |
+| Téléphone | `/phone` |
+
+Un endpoint supplémentaire, `/configurator`, permet de créer un appareil en envoyant un seul
+JSON contenant un champ `type` qui détermine quel service appeler.
+
+Les trois entités implémentent une interface commune `TechInterface` exposant une méthode
+`demarrer()`.
 
 ---
 
-## 🛠️ Stack Technique
+## Prérequis
+
+| Outil | Version minimale | Remarque |
+| --- | --- | --- |
+| JDK | 17 | Obligatoire (le projet cible Java 17) |
+| Maven | Non requis | Le wrapper `mvnw` est fourni |
+| Docker | 20.10 | Optionnel, uniquement pour le déploiement |
+| Postman ou curl | - | Pour tester l'API |
+
+Vérifier la version de Java :
+
+```bash
+java -version
+```
+
+---
+
+## Stack technique
 
 | Composant | Technologie |
-| :--- | :--- |
-| **Langage** | Java 17 (LTS) |
-| **Framework** | Spring Boot 4.1.1 |
-| **Build** | Maven (via `./mvnw`) |
-| **ORM** | Spring Data JPA / Hibernate 7 |
-| **Base de données** | H2 in-memory (`jdbc:h2:mem:demo`) |
-| **Conteneurisation** | Docker (multi-stage) & Docker Compose |
+| --- | --- |
+| Langage | Java 17 |
+| Framework | Spring Boot 4.1.1 |
+| Build | Maven (wrapper `mvnw`) |
+| Persistance | Spring Data JPA / Hibernate 7 |
+| Base de données | H2 (en mémoire) |
+| Conteneurisation | Docker (build multi-stage) |
 
 ---
 
-## 📂 Structure du Projet
+## Structure du projet
 
-```text
+```
 Spring Boot Clean/
-├── .mvn/                              # Wrapper Maven
+├── .mvn/                              # Configuration du wrapper Maven
 ├── src/
 │   ├── main/
 │   │   ├── java/com/example/demo/
-│   │   │   ├── DemoApplication.java   # Point d'entrée (@SpringBootApplication)
-│   │   │   ├── controller/            # Endpoints HTTP
+│   │   │   ├── DemoApplication.java   # Point d'entrée de l'application
+│   │   │   ├── controller/            # Points d'entrée HTTP
 │   │   │   │   ├── PcController.java
 │   │   │   │   ├── LaptopController.java
 │   │   │   │   ├── PhoneController.java
@@ -69,172 +100,384 @@ Spring Boot Clean/
 │   │   │   │   ├── LaptopService.java
 │   │   │   │   ├── PhoneService.java
 │   │   │   │   └── ConfiguratorService.java
-│   │   │   ├── repository/            # Spring Data JPA
+│   │   │   ├── repository/            # Accès aux données (Spring Data JPA)
 │   │   │   │   ├── PcRepository.java
 │   │   │   │   ├── LaptopRepository.java
 │   │   │   │   └── PhoneRepository.java
-│   │   │   └── model/                 # Entités JPA + TechInterface
+│   │   │   └── model/                 # Objets et entités
 │   │   │       ├── PC.java
 │   │   │       ├── Laptop.java
 │   │   │       ├── Phone.java
 │   │   │       ├── ConfiguratorRequest.java
 │   │   │       └── TechInterface.java
 │   │   └── resources/
-│   │       └── application.properties # Config Spring / H2 / JPA
+│   │       └── application.properties # Configuration de l'application
 │   └── test/
 │       └── java/com/example/demo/
 │           └── DemoApplicationTests.java
-├── .env                               # Variables d'environnement (local)
-├── docker-compose.yaml                # Stack API + Postgres (compose prêt)
-├── Dockerfile                         # Build multi-stage
+├── .env                               # Variables d'environnement locales
+├── docker-compose.yaml                # Orchestration des conteneurs
+├── Dockerfile                         # Construction de l'image
 ├── mvnw / mvnw.cmd                    # Wrapper Maven
-└── pom.xml                            # Dépendances Maven
+├── pom.xml                            # Dépendances Maven
+└── README.md
 ```
 
 ---
 
-## ⚙️ Configuration
+## Démarrage
 
-### `application.properties` (extrait)
+### Compiler et lancer
+
+```bash
+# Compilation (sans exécuter les tests)
+./mvnw clean package -DskipTests
+
+# Lancement de l'application
+./mvnw spring-boot:run
+```
+
+Sur Windows, utiliser `mvnw.cmd` à la place de `./mvnw`.
+
+L'application démarre par défaut sur le port **8080**.
+Vérification rapide :
+
+```bash
+curl http://localhost:8080/pc/hello
+```
+
+Réponse attendue : `Hello World!`
+
+---
+
+## Configuration
+
+Le fichier `src/main/resources/application.properties` contient la configuration :
 
 ```properties
 spring.application.name=demo
 
-# --- H2 in-memory datasource ---
+# Source de données H2 (en mémoire)
 spring.datasource.url=jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1
+spring.datasource.driverClassName=org.h2.Driver
 spring.datasource.username=sa
 spring.datasource.password=
 
-# --- JPA / Hibernate ---
+# JPA / Hibernate
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 spring.jpa.show-sql=true
+spring.jpa.open-in-view=false
 
-# --- Console H2 (dev only) ---
+# Console web H2 (développement)
 spring.h2.console.enabled=true
 spring.h2.console.path=/h2-console
 ```
 
-### `.env` (variables d'environnement locales)
+Le fichier `.env` contient des variables utilisées par Docker Compose :
 
 ```env
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=exemple
-POSTGRES_DB_NAME=nomdeladb
+POSTGRES_USER:postgres
+POSTGRES_PASSWORD:exemple
+POSTGRES_DB_NAME:nomdeladb
 ```
 
 ---
 
-## 🚀 Démarrage Rapide
+## Modèle de données
 
-### Pré-requis
+Chaque entité correspond à une table dans la base H2.
 
-| Outil | Version |
-| :--- | :--- |
-| JDK | 17+ |
-| Maven | via `./mvnw` (aucune installation requise) |
-| Docker (optionnel) | 20.10+ |
+### PC (table `pc`)
 
-### 1. Lancer en local
+| Champ | Type | Description |
+| --- | --- | --- |
+| `id` | Long | Clé primaire, auto-générée |
+| `brand` | String | Marque |
+| `ram` | int | Mémoire vive en Go |
+| `gpu` | String | Carte graphique |
 
-```bash
-# Compiler
-./mvnw clean package -DskipTests
+### Laptop (table `laptop`)
 
-# Démarrer
-./mvnw spring-boot:run
-```
+| Champ | Type | Description |
+| --- | --- | --- |
+| `id` | Long | Clé primaire, auto-générée |
+| `brand` | String | Marque |
+| `ram` | int | Mémoire vive en Go |
+| `batteryLife` | int | Autonomie en heures |
 
-> Sur Windows, utilise `./mvnw.cmd` à la place de `./mvnw`.
+### Phone (table `phone`)
 
-L'application démarre sur **`http://localhost:8080`**.
+| Champ | Type | Description |
+| --- | --- | --- |
+| `id` | Long | Clé primaire, auto-générée |
+| `brand` | String | Marque |
+| `ram` | int | Mémoire vive en Go |
+| `network` | String | Réseau (4G, 5G, ...) |
 
-### 2. Vérifier que ça tourne
-
-```bash
-curl http://localhost:8080/pc/hello
-curl http://localhost:8080/laptop/hello
-curl http://localhost:8080/phone/hello
-```
-
-Tu dois obtenir `Hello World!` pour chaque appel.
+L'identifiant `id` est généré automatiquement : il ne faut jamais l'envoyer dans un POST.
 
 ---
 
-## 📡 Endpoints API
+## Endpoints API
 
-### Smoke tests (GET)
+Base URL : `http://localhost:8080`
 
-| Méthode | URL | Réponse |
-| :--- | :--- | :--- |
-| `GET` | `/pc/hello` | `"Hello World!"` |
-| `GET` | `/laptop/hello` | `"Hello World!"` |
-| `GET` | `/phone/hello` | `"Hello World!"` |
+### Vérification
 
-### Création directe (POST)
+| Méthode | URL | Description | Réponse |
+| --- | --- | --- | --- |
+| GET | `/pc/hello` | Test du contrôleur PC | `Hello World!` |
+| GET | `/laptop/hello` | Test du contrôleur Laptop | `Hello World!` |
+| GET | `/phone/hello` | Test du contrôleur Phone | `Hello World!` |
 
-| Méthode | URL | Body JSON |
-| :--- | :--- | :--- |
-| `POST` | `/pc` | `{ "brand": "Alienware", "ram": 64, "gpu": "RTX 4090" }` |
-| `POST` | `/laptop` | `{ "brand": "MacBook Pro", "ram": 32, "batteryLife": 18 }` |
-| `POST` | `/phone` | `{ "brand": "iPhone", "ram": 6, "network": "5G" }` |
+### PC
 
-### Endpoint unifié `/configurator`
+| Méthode | URL | Description |
+| --- | --- | --- |
+| GET | `/pc` | Liste tous les PC |
+| GET | `/pc/{id}` | Récupère un PC par son identifiant |
+| POST | `/pc` | Crée un PC |
+| PUT | `/pc/{id}` | Modifie un PC existant |
+| DELETE | `/pc/{id}` | Supprime un PC |
 
-Un seul POST, le champ `type` (`PC`, `LAPTOP` ou `PHONE`) route vers le bon service.
+Corps de requête (POST / PUT) :
 
-| Méthode | URL | Body JSON |
-| :--- | :--- | :--- |
-| `POST` | `/configurator` | `{ "type": "PC", "brand": "...", "ram": ..., "gpu": "..." }` |
-| `POST` | `/configurator` | `{ "type": "LAPTOP", "brand": "...", "ram": ..., "batteryLife": ... }` |
-| `POST` | `/configurator` | `{ "type": "PHONE", "brand": "...", "ram": ..., "network": "..." }` |
+```json
+{
+  "brand": "Alienware",
+  "ram": 64,
+  "gpu": "RTX 4090"
+}
+```
 
-> 💡 Ne jamais envoyer `id` dans le JSON : il est auto-généré par Hibernate.
+### Laptop
 
-### Exemples avec `curl`
+| Méthode | URL | Description |
+| --- | --- | --- |
+| GET | `/laptop` | Liste tous les laptops |
+| GET | `/laptop/{id}` | Récupère un laptop par son identifiant |
+| POST | `/laptop` | Crée un laptop |
+| PUT | `/laptop/{id}` | Modifie un laptop existant |
+| DELETE | `/laptop/{id}` | Supprime un laptop |
+
+Corps de requête (POST / PUT) :
+
+```json
+{
+  "brand": "MacBook Pro",
+  "ram": 32,
+  "batteryLife": 18
+}
+```
+
+### Phone
+
+| Méthode | URL | Description |
+| --- | --- | --- |
+| GET | `/phone` | Liste tous les téléphones |
+| GET | `/phone/{id}` | Récupère un téléphone par son identifiant |
+| POST | `/phone` | Crée un téléphone |
+| PUT | `/phone/{id}` | Modifie un téléphone existant |
+| DELETE | `/phone/{id}` | Supprime un téléphone |
+
+Corps de requête (POST / PUT) :
+
+```json
+{
+  "brand": "iPhone",
+  "ram": 6,
+  "network": "5G"
+}
+```
+
+### Configurator
+
+Un seul point d'entrée pour créer n'importe quel appareil. Le champ `type` détermine le service
+utilisé.
+
+| Méthode | URL | Description |
+| --- | --- | --- |
+| POST | `/configurator` | Crée un appareil selon le champ `type` |
+
+Valeurs acceptées pour `type` : `PC`, `LAPTOP`, `PHONE` (insensible à la casse).
+
+Exemples de corps :
+
+```json
+{ "type": "PC",     "brand": "MSI",      "ram": 16, "gpu": "RTX 4060" }
+```
+
+```json
+{ "type": "LAPTOP", "brand": "Dell XPS", "ram": 32, "batteryLife": 10 }
+```
+
+```json
+{ "type": "PHONE",  "brand": "Samsung",  "ram": 8,  "network": "5G" }
+```
+
+### Codes de réponse
+
+Cette version simplifiée renvoie toujours le code `200` en cas de succès.
+
+| Situation | Comportement |
+| --- | --- |
+| Création réussie | `200` avec l'objet créé (id inclus) |
+| Lecture d'un id inexistant | `200` avec un corps vide |
+| Suppression d'un id inexistant | `200` (aucune erreur) |
+| Champ `type` manquant ou inconnu (`/configurator`) | `500` avec un message d'erreur |
+
+---
+
+## Exemples d'utilisation
+
+### Créer un PC
 
 ```bash
-# PC
-curl -X POST http://localhost:8080/configurator \
+curl -X POST http://localhost:8080/pc \
   -H "Content-Type: application/json" \
-  -d '{"type":"PC","brand":"Alienware","ram":64,"gpu":"RTX 4090"}'
+  -d '{"brand":"Alienware","ram":64,"gpu":"RTX 4090"}'
+```
 
-# Laptop
-curl -X POST http://localhost:8080/configurator \
-  -H "Content-Type: application/json" \
-  -d '{"type":"LAPTOP","brand":"MacBook Pro","ram":32,"batteryLife":18}'
+### Lister tous les PC
 
-# Phone
+```bash
+curl http://localhost:8080/pc
+```
+
+### Récupérer un PC par son identifiant
+
+```bash
+curl http://localhost:8080/pc/1
+```
+
+### Modifier un PC
+
+```bash
+curl -X PUT http://localhost:8080/pc/1 \
+  -H "Content-Type: application/json" \
+  -d '{"brand":"Alienware","ram":128,"gpu":"RTX 5090"}'
+```
+
+### Supprimer un PC
+
+```bash
+curl -X DELETE http://localhost:8080/pc/1
+```
+
+### Créer un laptop via le configurator
+
+```bash
 curl -X POST http://localhost:8080/configurator \
   -H "Content-Type: application/json" \
-  -d '{"type":"PHONE","brand":"iPhone","ram":6,"network":"5G"}'
+  -d '{"type":"LAPTOP","brand":"Dell XPS","ram":32,"batteryLife":10}'
 ```
 
 ### Tester avec Postman
 
-1. **New → HTTP Request**.
-2. Méthode = `POST`, URL = `http://localhost:8080/configurator`.
-3. Onglet **Body → raw → JSON**.
-4. Coller le JSON ci-dessus.
-5. **Send**.
-
-### Explorer la base H2
-
-Ouvre `http://localhost:8080/h2-console` :
-
-| Champ | Valeur |
-| :--- | :--- |
-| JDBC URL | `jdbc:h2:mem:demo` |
-| User Name | `sa` |
-| Password | *(vide)* |
-
-Tu peux ensuite faire `SELECT * FROM PC;` (et `LAPTOP`, `PHONE`) pour voir les données créées.
+1. Créer une nouvelle requête HTTP.
+2. Choisir la méthode (`GET`, `POST`, `PUT`, `DELETE`) et saisir l'URL.
+3. Pour `POST` et `PUT`, ouvrir l'onglet **Body**, sélectionner **raw** puis **JSON** et coller le corps.
+4. Envoyer la requête.
 
 ---
 
-## 🐳 Déploiement Docker
+## Base de données H2
 
-### Option 1 — Docker Compose
+La base est en mémoire : les données sont perdues à l'arrêt de l'application.
+
+Une console web est disponible pour consulter les tables :
+
+- URL : `http://localhost:8080/h2-console`
+
+Paramètres de connexion :
+
+| Champ | Valeur |
+| --- | --- |
+| JDBC URL | `jdbc:h2:mem:demo` |
+| User Name | `sa` |
+| Password | (laisser vide) |
+
+Exemple de requête :
+
+```sql
+SELECT * FROM PC;
+```
+
+---
+
+## Architecture
+
+Une documentation visuelle complète est disponible dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) :
+
+- Schéma des couches : [`docs/architecture-couches.svg`](docs/architecture-couches.svg) ou [`docs/architecture-couches.png`](docs/architecture-couches.png)
+- Cycle d'une requête : [`docs/cycle-requete.svg`](docs/cycle-requete.svg) ou [`docs/cycle-requete.png`](docs/cycle-requete.png)
+- Diagrammes Mermaid (dépendances, séquence) modifiables
+
+### Schéma des couches
+
+![Architecture en couches](docs/architecture-couches.svg)
+
+### Cycle d'une requête POST /pc
+
+![Cycle d'une requête](docs/cycle-requete.svg)
+
+### Rôle de chaque couche
+
+| Couche | Dossier | Rôle |
+| --- | --- | --- |
+| Controller | `controller/` | Reçoit les requêtes HTTP et renvoie du JSON |
+| Service | `service/` | Contient la logique métier |
+| Repository | `repository/` | Accès à la base de données |
+| Model | `model/` | Objets et entités manipulés |
+
+### Cycle d'une requête
+
+Exemple avec `POST /pc` :
+
+```
+Client (Postman / curl)
+        |
+        v
+PcController        -> recoit le JSON et le convertit en objet PC
+        |
+        v
+PcService           -> applique la logique metier
+        |
+        v
+PcRepository        -> save() fourni par Spring Data
+        |
+        v
+Hibernate / H2      -> INSERT INTO pc (...)
+```
+
+### Repository
+
+Les repositories sont de simples interfaces. Spring Data JPA génère automatiquement le code SQL.
+
+```java
+public interface PcRepository extends JpaRepository<PC, Long> {
+    // save(), findAll(), findById(), deleteById() sont fournis par defaut
+}
+```
+
+### Interface TechInterface
+
+Les trois entités partagent un contrat commun :
+
+```java
+public interface TechInterface {
+    void demarrer();
+}
+```
+
+`ConfiguratorService` renvoie un `TechInterface`, ce qui permet de manipuler n'importe quel
+appareil de la même manière.
+
+---
+
+## Docker
+
+### Docker Compose
 
 ```bash
 docker-compose up -d --build
@@ -242,88 +485,66 @@ docker-compose logs -f
 docker-compose down
 ```
 
-> ⚠️ Le `docker-compose.yaml` fourni référence Postgres mais l'application utilise H2 in-memory par défaut. Adapte le `compose` (ou les variables d'env Spring) si tu veux switcher vers Postgres.
+Avertissement : le fichier `docker-compose.yaml` fourni référence un service PostgreSQL
+(`db`), alors que l'application utilise H2 en mémoire par défaut. Il faut adapter la
+configuration si l'on souhaite réellement utiliser PostgreSQL.
 
-### Option 2 — Docker CLI
+### Docker CLI
 
 ```bash
 docker build -t springboot-tech-configurator .
 docker run -p 8080:8080 springboot-tech-configurator
 ```
 
-L'image finale est basée sur `eclipse-temurin:17-jre-alpine` (~200 Mo).
+Le `Dockerfile` utilise un build multi-stage :
+
+1. Étape de build : image `maven:3.9.6-eclipse-temurin-17` pour compiler et produire le JAR.
+2. Étape d'exécution : image `eclipse-temurin:17-jre-alpine`, légère, pour lancer le JAR.
 
 ---
 
-## 🏗️ Architecture
-
-### Cycle d'une requête `POST /configurator`
-
-```text
-Client (Postman / curl)
-  │
-  ▼
-ConfiguratorController       ←  Reçoit le JSON, le valide
-  │
-  ▼
-ConfiguratorService          ←  Route selon `type` (PC / LAPTOP / PHONE)
-  │
-  ▼
-PcService / LaptopService / PhoneService
-  │                            ←  Construit l'entité + applique la logique métier
-  ▼
-PcRepository / LaptopRepository / PhoneRepository
-  │                            ←  Délègue à Spring Data JPA
-  ▼
-Hibernate / JDBC
-  │
-  ▼
-Base H2 (en mémoire)
-```
-
-### Pourquoi `TechInterface` ?
-
-```java
-public interface TechInterface {
-    void demarrer();
-}
-
-public class PC    implements TechInterface { ... }
-public class Laptop implements TechInterface { ... }
-public class Phone  implements TechInterface { ... }
-```
-
-Toutes les entités partagent un contrat commun. `ConfiguratorService` retourne un `TechInterface` côté API, ce qui permet de manipuler n'importe quel appareil de manière polymorphe côté client.
-
----
-
-## 🧪 Tests
+## Tests
 
 ```bash
 ./mvnw test
 ```
 
-Lance `DemoApplicationTests#contextLoads()` qui valide que le contexte Spring Boot démarre sans erreur (donc que toutes les couches sont correctement câblées : repositories JPA, scan des composants, injection de dépendances).
+Le test `DemoApplicationTests#contextLoads()` vérifie que le contexte Spring démarre sans
+erreur, donc que toutes les couches sont correctement câblées.
 
 ---
 
-## 📌 Roadmap
+## Dépannage
 
-- [ ] `GET /pc`, `GET /laptop`, `GET /phone` (lister tous)
-- [ ] `GET /pc/{id}` (lecture unitaire)
-- [ ] `PUT` / `DELETE` pour les trois types
-- [ ] Vraie intégration Postgres via Spring profiles (`dev` / `prod`)
-- [ ] Validation Jakarta (`@Valid`, `@NotNull`) sur `ConfiguratorRequest`
-- [ ] Tests d'intégration MockMvc
+### "No compiler is provided in this environment"
+
+Le projet nécessite un **JDK 17 ou supérieur**, pas seulement un JRE. Vérifier que
+`JAVA_HOME` pointe vers un JDK :
+
+```bash
+echo $JAVA_HOME
+javac -version
+```
+
+Sous Windows, dans l'invite de commandes :
+
+```bat
+echo %JAVA_HOME%
+```
+
+Si `javac` est introuvable, installer un JDK (Temurin, Oracle, etc.) et définir `JAVA_HOME`
+dessus.
+
+### Le port 8080 est déjà utilisé
+
+Modifier le port dans `application.properties` :
+
+```properties
+server.port=8081
+```
 
 ---
 
-## 📄 Licence
+## Licence
 
-MIT — voir [LICENSE](LICENSE).
-
----
-
-<div align="center">
-
-</div>
+Ce projet est distribué sous licence MIT. Voir le fichier [LICENSE](LICENSE).

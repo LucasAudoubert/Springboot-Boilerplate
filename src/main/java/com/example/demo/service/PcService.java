@@ -9,26 +9,36 @@ import java.util.List;
 @Service
 public class PcService {
 
-    private final PcRepository pcRepository;  // AVANT : pas de repository
+    private final PcRepository pcRepository;
 
     public PcService(PcRepository pcRepository) {
         this.pcRepository = pcRepository;
     }
 
-    // AVANT : return new PC(...)  → objet perdu
-    // APRÈS : pcRepository.save(...) → sauvegardé en BD
     public PC create(String brand, Integer ram, String gpu) {
-        PC pc = new PC(brand, ram, gpu);
-        return pcRepository.save(pc);
+        return pcRepository.save(new PC(brand, ram, gpu));
     }
 
-    // NOUVEAU : lire tous les PC depuis la BD
     public List<PC> findAll() {
         return pcRepository.findAll();
     }
 
-    // NOUVEAU : lire un PC par son id
     public PC findById(Long id) {
         return pcRepository.findById(id).orElse(null);
+    }
+
+    public PC update(Long id, String brand, Integer ram, String gpu) {
+        PC pc = findById(id);
+        if (pc == null) {
+            return null;
+        }
+        pc.setBrand(brand);
+        pc.setRam(ram);
+        pc.setGpu(gpu);
+        return pcRepository.save(pc);
+    }
+
+    public void deleteById(Long id) {
+        pcRepository.deleteById(id);
     }
 }

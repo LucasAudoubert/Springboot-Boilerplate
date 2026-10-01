@@ -12,8 +12,8 @@ public class ConfiguratorService {
     private final PhoneService phoneService;
 
     public ConfiguratorService(PcService pcService,
-                                LaptopService laptopService,
-                                PhoneService phoneService) {
+                               LaptopService laptopService,
+                               PhoneService phoneService) {
         this.pcService = pcService;
         this.laptopService = laptopService;
         this.phoneService = phoneService;

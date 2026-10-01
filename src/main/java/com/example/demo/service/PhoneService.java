@@ -16,8 +16,7 @@ public class PhoneService {
     }
 
     public Phone create(String brand, Integer ram, String network) {
-        Phone phone = new Phone(brand, ram, network);
-        return phoneRepository.save(phone);
+        return phoneRepository.save(new Phone(brand, ram, network));
     }
 
     public List<Phone> findAll() {
@@ -26,5 +25,20 @@ public class PhoneService {
 
     public Phone findById(Long id) {
         return phoneRepository.findById(id).orElse(null);
+    }
+
+    public Phone update(Long id, String brand, Integer ram, String network) {
+        Phone phone = findById(id);
+        if (phone == null) {
+            return null;
+        }
+        phone.setBrand(brand);
+        phone.setRam(ram);
+        phone.setNetwork(network);
+        return phoneRepository.save(phone);
+    }
+
+    public void deleteById(Long id) {
+        phoneRepository.deleteById(id);
     }
 }

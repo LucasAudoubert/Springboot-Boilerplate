@@ -16,8 +16,7 @@ public class LaptopService {
     }
 
     public Laptop create(String brand, Integer ram, Integer batteryLife) {
-        Laptop laptop = new Laptop(brand, ram, batteryLife);
-        return laptopRepository.save(laptop);
+        return laptopRepository.save(new Laptop(brand, ram, batteryLife));
     }
 
     public List<Laptop> findAll() {
@@ -26,5 +25,20 @@ public class LaptopService {
 
     public Laptop findById(Long id) {
         return laptopRepository.findById(id).orElse(null);
+    }
+
+    public Laptop update(Long id, String brand, Integer ram, Integer batteryLife) {
+        Laptop laptop = findById(id);
+        if (laptop == null) {
+            return null;
+        }
+        laptop.setBrand(brand);
+        laptop.setRam(ram);
+        laptop.setBatteryLife(batteryLife);
+        return laptopRepository.save(laptop);
+    }
+
+    public void deleteById(Long id) {
+        laptopRepository.deleteById(id);
     }
 }
